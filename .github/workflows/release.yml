@@ -61,6 +61,9 @@ jobs:
           echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
           if [ -d "C:/Users/runneradmin/.cargo/bin" ]; then echo "C:/Users/runneradmin/.cargo/bin" >> "$GITHUB_PATH"; fi
 
+      - name: Check cargo-dist version
+        run: cargo dist --version
+
       - name: Build and package
         env:
           DIST_TARGET: ${{ matrix.target }}
