@@ -11,8 +11,13 @@ CLI in Rust + teloxide for sending Telegram notifications and a "listen" mode th
 
 Priority of token/`chat_id` sources:
 1. CLI flags `--token`, `--chat-id`.
-2. User config `~/.config/telegram-notifier/config.toml`.
-3. System config `/etc/telegram-notifier/config.toml`.
+2. User config (platform-specific path, see below).
+3. System config `/etc/telegram-notifier/config.toml` (Linux).
+
+User config locations:
+- Linux: `~/.config/telegram-notifier/config.toml`
+- macOS: `~/Library/Application Support/telegram-notifier/config.toml`
+- Windows: `%APPDATA%\telegram-notifier\config.toml` (e.g. `C:\Users\<user>\AppData\Roaming\telegram-notifier\config.toml`)
 
 TOML format:
 

@@ -11,8 +11,13 @@
 
 Приоритет источников токена/`chat_id`:
 1. CLI флаги `--token`, `--chat-id`.
-2. Локальный конфиг `~/.config/telegram-notifier/config.toml`.
-3. Системный конфиг `/etc/telegram-notifier/config.toml`.
+2. Пользовательский конфиг (см. пути ниже).
+3. Системный конфиг `/etc/telegram-notifier/config.toml` (Linux).
+
+Расположение пользовательского конфига:
+- Linux: `~/.config/telegram-notifier/config.toml`
+- macOS: `~/Library/Application Support/telegram-notifier/config.toml`
+- Windows: `%APPDATA%\telegram-notifier\config.toml` (например, `C:\Users\<user>\AppData\Roaming\telegram-notifier\config.toml`)
 
 Формат TOML:
 
@@ -58,4 +63,3 @@ chat_id = 123456789
    ```bash
    telegram-notifier send --message "task finished"
    ```
-   
