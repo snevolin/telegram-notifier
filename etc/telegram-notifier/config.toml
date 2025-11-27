@@ -1,0 +1,8 @@
+# Sample configuration for telegram-notifier
+# Copy to /etc/telegram-notifier/config.toml or ~/.config/telegram-notifier/config.toml
+
+# Telegram bot token (required)
+bot_token = "YOUR_BOT_TOKEN"
+
+# Target chat id for sending messages (optional for listen, required for send)
+# chat_id = 123456789

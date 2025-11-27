@@ -1,0 +1,23 @@
+[package]
+name = "telegram-notifier"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1"
+clap = { version = "4.5", features = ["derive"] }
+colored = "2.1"
+dirs = "5"
+serde = { version = "1", features = ["derive"] }
+teloxide = { version = "0.12", features = ["macros", "ctrlc_handler"] }
+tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
+toml = "0.8"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
+chrono = { version = "0.4", default-features = false, features = ["clock", "std"] }
+
+[package.metadata.dist]
+ci = ["github"]
+targets = ["x86_64-unknown-linux-gnu", "aarch64-apple-darwin", "x86_64-apple-darwin", "x86_64-pc-windows-msvc"]
+installers = ["deb", "rpm", "pkg", "msi"]
+universal-artifacts = ["apple-darwin"]
