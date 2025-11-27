@@ -19,9 +19,9 @@ jobs:
           - os: ubuntu-22.04
             target: x86_64-unknown-linux-gnu
             package: deb
-          - os: macos-13
+          - os: macos-15-intel
             target: x86_64-apple-darwin
-          - os: macos-14
+          - os: macos-15
             target: aarch64-apple-darwin
           - os: windows-2022
             target: x86_64-pc-windows-msvc
@@ -51,12 +51,15 @@ jobs:
           targets: ${{ matrix.target }}
 
       - name: Install cargo-dist
-        uses: taiki-e/cache-cargo-install-action@v1
-        with:
-          tool: cargo-dist
+        shell: bash
+        run: |
+          cargo install cargo-dist --locked --force
 
       - name: Ensure cargo bin in PATH
-        run: echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+        shell: bash
+        run: |
+          echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+          if [ -d "C:/Users/runneradmin/.cargo/bin" ]; then echo "C:/Users/runneradmin/.cargo/bin" >> "$GITHUB_PATH"; fi
 
       - name: Build and package
         env:
