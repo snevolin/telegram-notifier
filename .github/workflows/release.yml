@@ -18,31 +18,22 @@ jobs:
         include:
           - os: ubuntu-22.04
             target: x86_64-unknown-linux-gnu
-            package: deb
-          - os: macos-15-intel
+            host: x86_64-unknown-linux-gnu
+          - os: macos-15
             target: x86_64-apple-darwin
+            host: x86_64-apple-darwin
           - os: macos-15
             target: aarch64-apple-darwin
+            host: aarch64-apple-darwin
           - os: windows-2022
             target: x86_64-pc-windows-msvc
-          - os: ubuntu-22.04
-            target: x86_64-unknown-linux-gnu
-            container: fedora:40
-            package: rpm
-
-    container: ${{ matrix.container }}
+            host: x86_64-pc-windows-msvc
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install build deps (Fedora)
-        if: ${{ matrix.container == 'fedora:40' }}
-        run: |
-          dnf -y update
-          dnf -y install cargo rust rpm-build openssl-devel pkg-config make gcc
-
       - name: Install build deps (Ubuntu)
-        if: ${{ matrix.os == 'ubuntu-22.04' && matrix.container == '' }}
+        if: startsWith(matrix.os, 'ubuntu')
         run: sudo apt-get update && sudo apt-get install -y rpm pkg-config libssl-dev
 
       - name: Install Rust
@@ -50,30 +41,39 @@ jobs:
         with:
           targets: ${{ matrix.target }}
 
-      - name: Install cargo-dist
+      - name: Install cargo-dist (prebuilt)
         shell: bash
         run: |
-          cargo install cargo-dist --locked --force
+          set -euo pipefail
+          VERSION=0.30.2
+          HOST="${{ matrix.host }}"
+          CARGOBIN="$HOME/.cargo/bin"
+          mkdir -p "$CARGOBIN"
+          cargo install cargo-dist --locked --force --version "$VERSION"
+          echo "$CARGOBIN" >> "$GITHUB_PATH"
+          if [[ -x "$CARGOBIN/cargo-dist" ]]; then
+            echo "CARGO_DIST=$CARGOBIN/cargo-dist" >> "$GITHUB_ENV"
+          elif [[ -x "$CARGOBIN/dist" ]]; then
+            echo "CARGO_DIST=$CARGOBIN/dist" >> "$GITHUB_ENV"
+          fi
 
-      - name: Ensure cargo bin in PATH
+      - name: Show cargo-dist version
         shell: bash
         run: |
-          echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
-          if [ -d "C:/Users/runneradmin/.cargo/bin" ]; then echo "C:/Users/runneradmin/.cargo/bin" >> "$GITHUB_PATH"; fi
-
-      - name: Check cargo-dist version
-        run: cargo dist --version
+          $CARGO_DIST --version
 
       - name: Build and package
         env:
           DIST_TARGET: ${{ matrix.target }}
+          DIST_TAG: ${{ github.ref_name }}
+        shell: bash
         run: |
-          cargo dist build --target $DIST_TARGET --tag ${{ github.ref_name }}
+          $CARGO_DIST build --target $DIST_TARGET --tag $DIST_TAG --artifacts=global
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: dist-${{ matrix.target }}${{ matrix.package && format('-{0}', matrix.package) || '' }}
+          name: dist-${{ matrix.target }}
           path: target/dist/*
 
   publish:
