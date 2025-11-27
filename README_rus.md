@@ -54,3 +54,8 @@ chat_id = 123456789
    ```bash
    telegram-notifier send --message "task finished" --token "$BOT_TOKEN" --chat-id <ваш_chat_id>
    ```
+5. Если токен и `chat_id` уже указаны в конфиге, можно не передавать флаги:
+   ```bash
+   telegram-notifier send --message "task finished"
+   ```
+   
